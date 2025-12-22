@@ -69,9 +69,57 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Check if database exists
+from config import DATABASE_PATH
+
+if not DATABASE_PATH.exists():
+    st.error(f"""
+    ### ❌ Database Not Found
+    
+    The database file is missing at: `{DATABASE_PATH}`
+    
+    **To fix this issue:**
+    
+    1. **If running locally:**
+       ```bash
+       # Run ETL pipeline
+       python scripts/etl_pipeline.py
+       
+       # Load warehouse
+       python warehouse/load_warehouse.py
+       ```
+    
+    2. **If deploying to Streamlit Cloud:**
+       - Ensure `warehouse/insightops.db` is included in your Git repository
+       - Check that `.gitignore` allows this file: `!warehouse/insightops.db`
+       - Push changes to GitHub
+    
+    3. **Quick setup:**
+       ```bash
+       python setup_database.py
+       ```
+    """)
+    st.stop()
+
 # Initialize calculators (no caching needed - connections are created per query)
-kpi_calc = KPICalculator()
-insights_engine = InsightsEngine()
+try:
+    kpi_calc = KPICalculator()
+    insights_engine = InsightsEngine()
+except Exception as e:
+    st.error(f"""
+    ### ❌ Error Initializing Dashboard
+    
+    Failed to connect to the database.
+    
+    **Error details:** {str(e)}
+    
+    **Troubleshooting:**
+    - Verify database file exists at: `{DATABASE_PATH}`
+    - Check database file is not corrupted
+    - Ensure all dependencies are installed: `pip install -r requirements.txt`
+    """)
+    st.stop()
+
 
 # Sidebar navigation
 st.sidebar.title("📊 InsightOps")
