@@ -35,8 +35,9 @@ env/
 *.swo
 *~
 
-# Database
+# Database (exclude all except insightops.db which is needed for deployment)
 *.db
+!warehouse/insightops.db
 *.sqlite
 *.sqlite3
 
