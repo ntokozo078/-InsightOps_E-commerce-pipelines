@@ -137,7 +137,7 @@ python warehouse/load_warehouse.py
 streamlit run dashboard/app.py
 ```
 
-The dashboard will open in your browser at `http://localhost:8501`
+The dashboard will open in your browser at `https://ntokozo078--insightops-e-commerce-pipelines-dashboardapp-vbz2ih.streamlit.app/`
 
 ---
 
