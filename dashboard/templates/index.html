@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InsightOps – E-commerce BI Dashboard</title>
+  <meta name="description" content="InsightOps: A production-grade Business Intelligence dashboard for e-commerce analytics. Star schema data warehouse, ETL pipeline, automated insights." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+
+  <!-- Our styles -->
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <span class="brand-icon">📊</span>
+    <span class="brand-name">InsightOps</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-page="overview" id="nav-overview">
+      <span class="nav-icon">🏠</span>
+      <span>Executive Overview</span>
+    </button>
+    <button class="nav-item" data-page="products" id="nav-products">
+      <span class="nav-icon">📦</span>
+      <span>Product Performance</span>
+    </button>
+    <button class="nav-item" data-page="customers" id="nav-customers">
+      <span class="nav-icon">👥</span>
+      <span>Customer Insights</span>
+    </button>
+    <button class="nav-item" data-page="operations" id="nav-operations">
+      <span class="nav-icon">⚙️</span>
+      <span>Operations</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-info">
+      <p class="info-label">Dataset</p>
+      <p class="info-value">Olist Brazilian E-commerce</p>
+      <p class="info-label mt-8">Pipeline</p>
+      <p class="info-value">ETL → Star Schema → BI</p>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════ -->
+<main class="main" id="main">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">☰</button>
+    <div class="topbar-title" id="topbarTitle">Executive Overview</div>
+    <div class="topbar-right">
+      <div class="status-dot"></div>
+      <span class="status-label">Live Data</span>
+    </div>
+  </header>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p>Loading analytics…</p>
+  </div>
+
+  <!-- Error state -->
+  <div class="error-state hidden" id="errorState">
+    <div class="error-icon">⚠️</div>
+    <h2>Data not available</h2>
+    <p>Run <code>python export_data.py</code> from the InsightOps directory to generate dashboard data.</p>
+  </div>
+
+  <!-- ══ PAGE: EXECUTIVE OVERVIEW ══════════════════ -->
+  <section class="page active" id="page-overview">
+    <div class="page-header">
+      <h1 class="page-title">Executive Overview</h1>
+      <p class="page-subtitle">Key metrics and business performance at a glance</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card" id="kpi-revenue">
+        <div class="kpi-icon revenue-icon">💰</div>
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-value" id="kpiRevenue">—</div>
+        <div class="kpi-sub">All successful orders</div>
+      </div>
+      <div class="kpi-card" id="kpi-profit">
+        <div class="kpi-icon profit-icon">📈</div>
+        <div class="kpi-label">Total Profit</div>
+        <div class="kpi-value" id="kpiProfit">—</div>
+        <div class="kpi-sub">Revenue minus costs</div>
+      </div>
+      <div class="kpi-card" id="kpi-margin">
+        <div class="kpi-icon margin-icon">🎯</div>
+        <div class="kpi-label">Profit Margin</div>
+        <div class="kpi-value" id="kpiMargin">—</div>
+        <div class="kpi-sub">Overall margin %</div>
+      </div>
+      <div class="kpi-card" id="kpi-success">
+        <div class="kpi-icon success-icon">✅</div>
+        <div class="kpi-label">Order Success Rate</div>
+        <div class="kpi-value" id="kpiSuccess">—</div>
+        <div class="kpi-sub" id="kpiSuccessSub">—</div>
+      </div>
+    </div>
+
+    <!-- Trends chart -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">📈 Revenue &amp; Profit Trends</h2>
+        <span class="card-badge">Monthly</span>
+      </div>
+      <div id="chartTrends" class="chart-container"></div>
+    </div>
+
+    <!-- Automated Insights -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">🔍 Automated Insights</h2>
+        <span class="card-badge" id="insightCount">—</span>
+      </div>
+      <div id="insightsContainer" class="insights-list"></div>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: PRODUCT PERFORMANCE ══════════════════ -->
+  <section class="page" id="page-products">
+    <div class="page-header">
+      <h1 class="page-title">Product Performance</h1>
+      <p class="page-subtitle">Revenue vs profit analysis by product category</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">💰 Revenue vs Profit by Category</h2>
+        <span class="card-badge">Bubble = Order Volume</span>
+      </div>
+      <div id="chartScatter" class="chart-container"></div>
+      <div class="chart-hint">Categories in the top-right quadrant are high performers. Bottom-right shows high revenue but low profit.</div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📊 Top 10 by Revenue</h2>
+        </div>
+        <div id="chartTopCategories" class="chart-container chart-sm"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">⚠️ Low Margin Categories</h2>
+          <span class="card-badge danger" id="lowMarginCount">—</span>
+        </div>
+        <div class="table-wrapper" id="lowMarginTable">
+          <p class="empty-state">Loading…</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: CUSTOMER INSIGHTS ══════════════════ -->
+  <section class="page" id="page-customers">
+    <div class="page-header">
+      <h1 class="page-title">Customer Insights</h1>
+      <p class="page-subtitle">Customer segmentation and retention analysis</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">👥 Customer Segments</h2>
+        </div>
+        <div id="chartSegmentPie" class="chart-container chart-sm"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">💵 Revenue by Segment</h2>
+        </div>
+        <div id="chartSegmentRevenue" class="chart-container chart-sm"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">📊 Segment Performance Metrics</h2>
+      </div>
+      <div class="table-wrapper" id="segmentsTable"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">🏆 Top 10 Customers by Revenue</h2>
+      </div>
+      <div class="table-wrapper" id="topCustomersTable"></div>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: OPERATIONS ══════════════════ -->
+  <section class="page" id="page-operations">
+    <div class="page-header">
+      <h1 class="page-title">Operations Dashboard</h1>
+      <p class="page-subtitle">Payment failures and channel performance</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📱 Revenue by Channel</h2>
+        </div>
+        <div id="chartChannelRevenue" class="chart-container chart-sm"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">❌ Payment Failure Rate</h2>
+        </div>
+        <div id="chartChannelFailure" class="chart-container chart-sm"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">📊 Channel Performance Metrics</h2>
+      </div>
+      <div class="table-wrapper" id="channelTable"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">🚨 Operational Alerts</h2>
+      </div>
+      <div id="operationalAlerts"></div>
+    </div>
+  </section>
+
+</main>
+
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>
