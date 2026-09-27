@@ -12,7 +12,7 @@ sys.path.append(str(Path(__file__).parent))
 from analytics.kpi_calculator import KPICalculator
 from analytics.insights_engine import InsightsEngine
 
-OUTPUT_FILE = Path(__file__).parent / "dashboard" / "static" / "data" / "dashboard_data.json"
+OUTPUT_FILE = Path(__file__).parent / "dashboard" / "data" / "dashboard_data.json"
 
 
 def export():

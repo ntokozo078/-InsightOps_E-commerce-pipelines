@@ -1,10 +1,10 @@
 services:
   - type: web
     name: insightops-dashboard
-    runtime: python
-    buildCommand: pip install -r requirements.txt && python export_data.py
-    startCommand: gunicorn dashboard.app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
-    healthCheckPath: /health
+    runtime: static
+    buildCommand: pip install pandas numpy && python export_data.py
+    staticPublishPath: ./dashboard
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache

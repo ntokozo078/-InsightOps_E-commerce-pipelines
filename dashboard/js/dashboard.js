@@ -442,7 +442,7 @@ function renderOperationalAlerts(channels) {
 ═══════════════════════════════════════ */
 async function boot() {
   try {
-    const res = await fetch('/api/data');
+    const res = await fetch('data/dashboard_data.json');
     if (!res.ok) throw new Error('Data not available');
     const data = await res.json();
     if (data.error) throw new Error(data.error);

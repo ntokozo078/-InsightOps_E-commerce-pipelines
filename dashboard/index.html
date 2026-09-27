@@ -13,8 +13,8 @@
   <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 
-  <!-- Our styles -->
-  <link rel="stylesheet" href="/static/css/styles.css" />
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
 
@@ -81,7 +81,7 @@
   <div class="error-state hidden" id="errorState">
     <div class="error-icon">⚠️</div>
     <h2>Data not available</h2>
-    <p>Run <code>python export_data.py</code> from the InsightOps directory to generate dashboard data.</p>
+    <p>Dashboard data could not be loaded. Please check that <code>data/dashboard_data.json</code> exists.</p>
   </div>
 
   <!-- ══ PAGE: EXECUTIVE OVERVIEW ══════════════════ -->
@@ -250,6 +250,6 @@
 
 </main>
 
-<script src="/static/js/dashboard.js"></script>
+<script src="js/dashboard.js"></script>
 </body>
 </html>
